@@ -4,6 +4,13 @@
 <button (click)="logout()">Se déconnecter</button>
 <button (click)="testWithTokenInterceptor()">test with tokenInterceptor</button>
 
+
+<br>
+<a routerLink="/authentified">authentified component</a>
+<br>
+<a routerLink="/">home</a>
+
+
 <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
   <label for="username">userName: </label>
   <input id="username" type="text" formControlName="username" />
@@ -15,3 +22,4 @@
   <input id="email" type="text" formControlName="email" />
   <button type="submit">Submit</button>
 </form>
+<router-outlet></router-outlet>
