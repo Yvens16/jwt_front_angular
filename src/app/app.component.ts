@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -8,6 +9,8 @@ import { FormGroup, FormControl } from '@angular/forms';
 export class AppComponent {
   title = 'jwt_front';
 
+  constructor(private http: HttpClient) { }
+
   registerForm = new FormGroup({
     username: new FormControl('Angular2'),
     password: new FormControl('1234'),
@@ -15,8 +18,8 @@ export class AppComponent {
   });
 
   onRegister() {
-    const {username, password, email} = this.registerForm.value;
-    const data = {username, password, email};
+    const { username, password, email } = this.registerForm.value;
+    const data = { username, password, email };
     fetch("http://localhost:8080/register", {
       method: 'POST',
       body: JSON.stringify(data),
@@ -24,13 +27,13 @@ export class AppComponent {
         "Content-Type": "application/json",
       },
     })
-    .then(res => res.json())
-    .then(response => {
-      const {token} = response;
-      localStorage.setItem("token", token);
-      console.log(token, "Inscrit avec Success !")
-    })
-    .catch(err => console.log(err))
+      .then(res => res.json())
+      .then(response => {
+        const { token } = response;
+        localStorage.setItem("token", token);
+        console.log(token, "Inscrit avec Success !")
+      })
+      .catch(err => console.log(err))
   }
 
   testWithoutToken = () => {
@@ -41,7 +44,7 @@ export class AppComponent {
 
   testWithToken = () => {
     const token = localStorage.getItem("token");
-    const header = new Headers({ 'Authorization': `Bearer ${token}` , "Content-Type": "application/json"});
+    const header = new Headers({ 'Authorization': `Bearer ${token}`, "Content-Type": "application/json" });
     const options = {
       headers: header,
     };
@@ -52,8 +55,8 @@ export class AppComponent {
   }
 
   login() {
-    const {username, password} = this.registerForm.value;
-    const data = {username, password};
+    const { username, password } = this.registerForm.value;
+    const data = { username, password };
     fetch("http://localhost:8080/login", {
       method: 'POST',
       body: JSON.stringify(data),
@@ -61,13 +64,13 @@ export class AppComponent {
         "Content-Type": "application/json",
       },
     })
-    .then(res => res.json())
-    .then(response => {
-      const {token} = response;
-      localStorage.setItem("token", token);
-      console.log(token, "Connecté avec Success !")
-    })
-    .catch(err => console.log(err))
+      .then(res => res.json())
+      .then(response => {
+        const { token } = response;
+        localStorage.setItem("token", token);
+        console.log(token, "Connecté avec Success !")
+      })
+      .catch(err => console.log(err))
   }
 
   logout() {
@@ -78,13 +81,30 @@ export class AppComponent {
       method: 'POST',
     };
     fetch("http://localhost:8080/customlogout", options)
-    .then(res => res.json())
-    .then(response => {
-      console.log(response);
-      localStorage.removeItem("token");
-      console.log(localStorage.getItem("token"), "pas de token parce qu'on a vidé le localStorage");
-    })
-    .catch(err => console.log(err))
-    
+      .then(res => res.json())
+      .then(response => {
+        console.log(response);
+        localStorage.removeItem("token");
+        console.log(localStorage.getItem("token"), "pas de token parce qu'on a vidé le localStorage");
+      })
+      .catch(err => console.log(err))
+
+  }
+
+// INTERCEPTOR EXAMPLE
+// Attention ça ne fonctionne qu'avec le http client, ça ne fonctionne pas avec fetch
+  testWithTokenInterceptor() {
+    this.http.get("http://localhost:8080/try")
+      .subscribe({
+        next(response) {
+          console.log("testWithTokenInterceptor", response)
+        },
+        error(err) {
+          console.log("Une erreur s'est prpoduite: ", err);
+        },
+        complete() {
+          console.log('Observable compléter');
+        },
+      })
   }
 }
